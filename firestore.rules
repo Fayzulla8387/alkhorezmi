@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isMentor() { return request.auth != null && request.auth.token.email == 'mentor@cs8.uz'; }
+    match /students/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isMentor());
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if isMentor();
+    }
+  }
+}
